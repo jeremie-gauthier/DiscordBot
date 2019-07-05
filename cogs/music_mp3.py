@@ -4,6 +4,7 @@ from discord.utils import get
 import youtube_dl
 import os
 import random
+import metadata
 
 class MusicMP3(commands.Cog):
 
@@ -17,6 +18,9 @@ class MusicMP3(commands.Cog):
 	@commands.command(pass_context=True)
 	async def join(self, ctx):
 		"""Let the bot join your current channel"""
+		if metadata.current_status == "offline":
+			return
+
 		channel = ctx.message.author.voice.channel
 		self.voice = get(self.client.voice_clients, guild=ctx.guild)
 
@@ -25,21 +29,14 @@ class MusicMP3(commands.Cog):
 		else:
 			self.voice = await channel.connect()
 
-		# Contourner bug => Deco + reco
-		# await self.voice.disconnect()
-
-		# if self.voice and self.voice.is_connected():
-		# 	await self.voice.move_to(channel)
-		# else:
-		# 	self.voice = await channel.connect()
-		# ----
-
 		print(f"The bot has connected to {channel}\n")
 		await ctx.send(f"Joined {channel}")
 
 	@commands.command(pass_context=True, aliases=["l", "lea"])
 	async def leave(self, ctx):
 		"""Disconnect the bot from the current channel"""
+		if metadata.current_status == "offline":
+			return
 		channel = ctx.message.author.voice.channel
 		self.voice = get(self.client.voice_clients, guild=ctx.guild)
 
@@ -54,6 +51,9 @@ class MusicMP3(commands.Cog):
 	@commands.command(pass_context=True, aliases=["p"])
 	async def play(self, ctx, url : str):
 		"""Play song from YouTube"""
+		if metadata.current_status == "offline":
+			return
+
 		song_there = os.path.isfile("song.mp3")
 		try:
 			if song_there:
@@ -98,6 +98,8 @@ class MusicMP3(commands.Cog):
 	@commands.command(pass_context=True)
 	async def chiantos(self, ctx):
 		"""Play a random song from Naheulbeuk"""
+		if metadata.current_status == "offline":
+			return
 		prefix = "./chiantos/"
 		songs = os.listdir("./chiantos/")
 		chosen = prefix + random.choice(songs)

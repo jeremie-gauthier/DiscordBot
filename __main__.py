@@ -10,7 +10,7 @@ def get_token(pathname):
 		fd = open(pathname, "r")
 	except (IsADirectoryError, FileNotFoundError, PermissionError):
 		return (-1)
-	tok = fd.readline().strip('\n')
+	tok = fd.readline().strip()
 	fd.close()
 	return (tok)
 

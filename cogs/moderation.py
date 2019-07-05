@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import metadata
 
 class Moderation(commands.Cog):
 
@@ -13,15 +14,19 @@ class Moderation(commands.Cog):
 	@commands.command()
 	async def ping(self, ctx):
 		"""Show your ping"""
-		await ctx.send(f"Pong! {round(self.client.latency * 1000)}ms")
+		if metadata.current_status == "online":	
+			await ctx.send(f"Pong! {round(self.client.latency * 1000)}ms")
 
 	@commands.command()
 	async def clear(self, ctx, amount : int):
 		"""Erase the most recents messages"""
-		await ctx.channel.purge(limit=amount)
+		if metadata.current_status == "online":	
+			await ctx.channel.purge(limit=amount)
 
 	@clear.error
 	async def clear_error(self, ctx, error):
+		if metadata.current_status == "offline":
+			return
 		if isinstance(error, commands.MissingRequiredArgument):
 			await ctx.send("Please specify an amount of messages to delete.")
 		elif isinstance(error, commands.UserInputError):
